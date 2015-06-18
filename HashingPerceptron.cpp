@@ -74,43 +74,19 @@ HashingPerceptron::HashingPerceptron(char* path, int token_size, float learning_
 	delete parser;
 	this->learning_rate = learning_rate;
 	this->threshold = 0.5;
-	/*
-	srand(time(NULL));
-	double r = ((double) rand() / (RAND_MAX));
-	bool sign = ((double) rand() / (RAND_MAX)) > 0.5;
-	r *= -1;
-	if (randomize)
-		this->weights = vector<float>(this->hash_size,0);
-	*/
+
 	this->weights = vector<float>(this->hash_size,init);
 	cout << "Los pesos se inicalizaron en " << this->weights[0] << endl;
-	//mapper->printPhrases();
 	this->Initialize();
-	//cout << "Comienzo a normalizar" << endl;
-	//this->normalizeWeights();
-	//cout << "Finalizo de normalizar" << endl;
-
-// TODO NNP counter->stemming  : guardaré en el mapper con palabras stemmizadas
-// y se trabajará con el archivo stemmizado
-
 }
 
 float HashingPerceptron::dot_product(vector<unsigned int> vec)
 {
-	//cout << string(20,'*') << endl;
 	float count = 0;
 	for (unsigned int i = 0; i < vec.size(); i++)
 	{
-		//cout << "Multiplico " << 1 << " por " << this->weights[vec[i]]<<endl;
 		count += this->weights[vec[i]];
 	}
-	//cout << "El producto entre " << endl;
-	//this->show_vec_flt(this->weights);
-	//cout << "\n Y \n";
-	//this->show_vec_int(vec);
-	//cout << "es " << count << endl;
-	//cin.get();
-	//cout << string(20,'*') << endl;
 	return count;
 }
 
@@ -122,13 +98,8 @@ vector<unsigned int> HashingPerceptron::getVector(vector<string> tokenized_words
 	for(unsigned int i=0; i < tokenized_words.size(); i++)
 	{
 		string str = tokenized_words[i];
-		//if (str != "") this->savePhrase(str,sentiment);
-		if (str != "")
-		{
-			phrase_vec.push_back(str);
-		}else{
-			//cout << "TENGO UN ESPACIO LPM" << endl;
-		}
+		phrase_vec.push_back(str);
+
 		for (int j=1; j< this->phrase_lenght; j++)
 		{
 			if (i+j < tokenized_words.size())
@@ -161,21 +132,15 @@ void HashingPerceptron::Initialize()
 	clock_t inicio = clock();
 	int min_error = -1;
 	int min_count = 0;
-	//int last_error = 0;
 	vector<float> aux_weights;
 	while (true)
 	{
 		int error_count = 0;
 		rev_counter = 0;
-		//cout << "Iteracion " << iter_count++ << endl;
-		// (movie_id, (sentiment, vec_review)
-		//pair<string,pair<int,vector<unsigned int>>> elem;
-		//BOOST_FOREACH(elem, this->aux_map_2)
 		pair<int,vector<unsigned int>> elem;
 		BOOST_FOREACH(elem,this->test_vec)
 		{
 			rev_counter++;
-			//float aux = dot_product(elem.second.second);
 			float aux = dot_product(elem.second);
 			bool result = aux > this->threshold;
 			//int error = elem.second.first - result;
@@ -184,8 +149,6 @@ void HashingPerceptron::Initialize()
 			{
 				int pos;
 				error_count++;
-				//cout << "Balanceo" << endl;cout << "Balanceo" << endl;
-				//BOOST_FOREACH(pos, elem.second.second)
 				BOOST_FOREACH(pos, elem.second)
 				{
 					this->weights[pos] += learning_rate * error;
@@ -209,8 +172,6 @@ void HashingPerceptron::Initialize()
 			min_error = error_count;
 			aux_weights = this->weights;
 		}
-		//if (error_count >= last_error && last_error != 0) learning_rate *= 0.1;
-		//last_error = error_count;
 		//Controlo el corte
 		if (iter_count == ITERATION_LIMIT)
 		{

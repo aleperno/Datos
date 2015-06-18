@@ -3,6 +3,14 @@
 ################
 Files/*.csv
 Files/*.tsv
+*.o
+complete_learning.tsv
+complete_test.tsv
+popcorn.csv
+avg.csv
+Datos
+final.csv
+grupo8_probs.csv
 #################
 ## Eclipse
 #################

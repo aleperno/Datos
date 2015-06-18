@@ -6,33 +6,10 @@ import re
 """
 python preParser.py <archivo>
 """
-BAD_SMILEYS_PATH = "bad-smileys.txt"
-GOOD_SMILEYS_PATH = "good-smileys.txt"
-
 LEARNING_NAME = "complete_learning.tsv"
 TEST_NAME = "complete_test.tsv"
 
 class Parser:
-
-	def __init__(self):
-		self.badSmileys = self.loadBadSmileys()
-		self.goodSmileys = self.loadGoodSmileys()
-
-	def loadBadSmileys(self):
-		d = {}
-		smileysFile = open(BAD_SMILEYS_PATH)
-		for smiley in smileysFile:
-			smiley = smiley.replace('\n','')
-			d[smiley] = None
-		return d
-
-	def loadGoodSmileys(self):
-		d = {}
-		smileysFile = open(GOOD_SMILEYS_PATH)
-		for smiley in smileysFile:
-			smiley = smiley.replace('\n','')
-			d[smiley] = None
-		return d
 
 	def parseLearningLine(self,line):
 		(movie_id, sentiment, review) = line.split('\t')
