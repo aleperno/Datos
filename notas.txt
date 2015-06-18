@@ -1,0 +1,104 @@
+- En el mapper se guardan frases de 1, 2 o n palabras, dependiendo del argumento que se le pase. El mapper es un diccionario cuya clave es la frase y como dato (en el perceptron) se utiliza la posicion. Como posicion se utiliza el tamanio del diccionario a la hora de guardar el nuevo elemento.
+
+- Para emplear perceptron se necesita la representacion vectorial de un review. En principio el vector correspondia a un vector de tamanio fijo, igual al tamanio del diccionario. Siendo que en el diccionario dependiendo del argumento, podiamos tener hasta 5M elementos, era evidente que ibamos a tener mas no-ocurrencias (0) que ocurrencias (1). Para ello decidimos que el vector de representacion solo guarde las posiciones de las ocurrencias. El "1" seria implicito. Solo admitimos una ocurrencia por review. Es decir, ocurrencias varias de la misma palabra se descartan.
+
+- Al tener frases de tamanio variable, como palabras, para el vector de representacion decidimos SOLO utilizar la coincidencia mas grande. Es decir
+si en el diccionario poseiamos {"Hola que tal", "Hola que", "que tal", "hola", "que", "tal"}. Si tenemos "Hola que lindo dia" la unica coincidencia obtenida seria
+"hola que", representada como [1] (en este caso, en la pos 1 del dic)
+
+- Dada la definicion anterior del vector de representacion es necesario tener cuidado a la hora de definir el producto vectoria. Para ello definimos:
+	dot_prod:
+		for pos in vector_representacion:
+			r += pesos[pos]   #La multiplicacion por 1 es implicita
+
+- Se implemento un Perceptron, con pesos originales en 0. Y se probo un submittion en Kaggle con un learning_rate de 0.01, y frases de 3 palabras.
+
+- Los primeros resultados fueron muy malos (0.65452). Analizando el algoritmo, nos dimos cuenta que a la hora de realizar un producto vectoria, algunos resultados daban negativos (menores a 0) y otros mayores a 1. Lo que al comparar con el threshold (0.5) el espacio de resultados no resultaba simetrico. Para ello decidimos utilizar alguna funcion que normalize el resultado.
+
+- Utilizamos variantes de la funcion sismoide. La misma mejoro el resultado, pero no sustancialmente (0.71118). Esto nos llevo a re-analizar todo el concepto planteado.
+
+- Uno de los problemas principales encontados, el el hecho de para representar un review solo tomar una coincidencia (y la mayor). Esto representaba errores a la hora de balancear los pesos. Por ej dado el mismo diccionario descripto anteriormente. Al balancear con el review "hola que tal", siendo que el diccionario se formo con esos mismos reviews, las unicas coincidencias posibles seran las mayores es decir en este caso "hol que tal". Por lo que los demas elementos "hola que", etc, nunca se balancearan. Lo que a posteriori si con un review de prueba se obtiene una coincidencia de esos elementos, arrojara un peso nulo, cuando no debiera serlo.
+
+- Asimismo otro posible inconveniente posible seria el hecho de SOLO tomar una ocurrencia de coincidencia. Es decir que los reviews "muy muy muy bueno" y "muy bueno" tendrian la misma representacion vectorial. Lo que si analizamos semanticamente, no debieran tener el mismo peso ambos reviews.
+
+- Ademas evaluamos cambiar como se "guardan" las palabras. Al utilizar un diccionario se guarda todo en memoria lo que lo hace poco eficiente (consume 1.3GB de RAM). Para ello evaluamos utilizar hashing_trick para poder prescindir de guardar ciertos elementos en memoria.
+
+-Con estos elementos tenidos en cuenta, por motivos de facilidad de realizar un prototipo, realizamos un prototipo en Python con ciertas variantes.
+	+Solo se toman ocurrencias de una palabra.
+	+No se usa diccionario, sino que un vector de posiciones dadas por hashing trick.
+	+Admite ocurrencias de una misma palabra
+	+Se normaliza acorde al maximo y minimo de los valores obtenidos -> n_i = (x_i - min) / (max - min)
+
+- Con el nuevo script, realizamos una prueba con un learning_rate de 0.1, maximo de iteraciones de balanceo 80, obtuvimos un resultado de (0.93043).
+
+Suponemos que con mas iteraciones de aprendizaje, con learnin_rates convergentes y/o tambien tomar coincidencias de frases, podriamos aumentar estos resultados.
+
+- Utilizando un learning_rate menor (0.03) y frases de 2 palabras y un archivo pre-parseado (limpio) logramos un record de 0.95288 (AUC SCORE 0.95525). Cuestiones a probar:
+	+ Aumentar las iteraciones de aprendizaje (en caso de llegar al limite).
+	+ Probar con frases de 3 palabras.
+	+ Ver maneras de "limpiar" el texto.
+
+- En los datos de prueba, se utiliza como sentiment 1. Y se calculan los errores. Suponiendo que estan equitativamente distribuidos, deberiamos predecir un 50% de 1s y un 50% de 0s. Por lo que el error deberia ser de 0.5.  Nuestro mejor fue (12366		0.50536) con 3-grams > AUC SCORE 0.95320 (Kaggle dio 0.95609)
+
+- Con 4-grams:
+	Kaggle dio 0.95393
+	AUC SCORE 0.95117
+
+++ PROBAR +++
+
+- Con 5-grams :
+	Errors		Average		Nr. Samples	Since Start
+	12375		0.505		25000		0:00:41.510642
+	Supuesto real 0.8894 | AUC SCORE 0.95057 || REAL 0.95198
+
+- Con 6-grams :
+	Errors		Average		Nr. Samples	Since Start
+	12267		0.50932		25000		0:00:47.471348
+	Supuesto real 0.8838 | AUC SCORE 0.94752 || REAL 0.95075
+	
+- Con 3-grams y learnin decay:
+	Errors		Average		Nr. Samples	Since Start
+	12399		0.50404		25000		0:00:23.226809
+	Supuesto real 0.8858 | AUC SCORE 0.95181 || REAL 0.95433
+
+- Con 5-grams y learning decay:
+	Errors		Average		Nr. Samples	Since Start
+	12347		0.50612		25000		0:00:42.199293
+	Supuesto real 0.8852 | AUC SCORE 0.94988 || REAL 0.95348
+
+- Con 4-grams y learning decay:
+	Errors		Average		Nr. Samples	Since Start
+	12548		0.49808		25000		0:00:33.703246
+	Supuesto real 0.8842 | AUC SCORE 0.95191
+	
+
+###############################################################
+
+En C++
+(Con nuesto parser)
+-Con 3-gramas lr=0.05*log(2) = 0.95570
+
+-Con 3-gramas lr=0.1*log(2) = 0.95507
+
+(Con el de MLWARE)
+
+-Con 3-gramas lr=0.1*log(2) = 0.95476
+-Con 4-gramas lr=0.01*log(2) = 0.95543
+
+##############################################################
+
+Con HashingTrick
+
+- 3gramas, lr=0.1*log(2), nuestro parser, sin espacios = 0.95575, con espacios =0.95579
+
+- Sin decay, con 65.000 reviews y sigmoid (a=0.01) = 0.95855 (SUBIDO A KAGGLE)
+- Con decay, con 100.000 reviews y sigmoid (a=0.01) = 0.95939
+- Sin decay, 100.000 reviews, sigmoid (a=0.01) = 0.96055
+- Sin decay, 200.000 reviews, sigmoid (a=0.01) = 0.96096
+
+#Luis dijo que NO combiene usar decays, y que hay que guardar el hiperplano de menor error, no el ultimo.
+#Todo esto con sigmoid(a=0.01)
+- 0 (25.000 originales), limite 150 iteraciones > (error min 0) 0.95553 [34 segs] 
+- Pruebo Sin Decay, 100.000, limite 100 iteraciones. > (error min 26) 0.95925
+- Pruebo Sin Decay, 100.000, limite 200/150 iteraciones. > (error min 8) 0.96055 [9min, 150 ite]
+- 200.000, limite 150 > (error min 38) 0.96176 [17:36]
