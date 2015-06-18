@@ -1,9 +1,13 @@
-#Organizacion de datos
+#Organizacion de datos | Kaggle Competition
 
-Estado: En Prueba
+##State: Release Candidate
 
-1)Preparsear el labeledTrainData.tsv
-python preParser labeledTrainData.tsv <output_file>
+##Requirements 
+-[Kaggle Data](http://www.kaggle.com/c/word2vec-nlp-tutorial) in 'Files' folder
+-Python 2.7x (not tested in Python 3)
+-g++
+-python-sklearn
 
-2)Llamar al programa principal
-./Debug/<bin> <preparsed_file> 
+##Run
+Just run 
+**./script**
