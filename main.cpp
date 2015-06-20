@@ -73,11 +73,12 @@ int main( int argc, char* args[] ) {
 	HashingPerceptron* perceptron = new HashingPerceptron(learningPath,3, learning_rate ,hash_size,init);
 
 	//Levanto y parseo el archivo a analizar
-	Parser* parser = new Parser();
+	//Parser* parser = new Parser();
 
-	ifstream testfile;
-	testfile.open(testPath);
+	//ifstream testfile;
+	//testfile.open(testPath);
 
+	/*
 	vector<string> id_reviews;
 	vector<float> scoresP;
 	//Utilizo para normalizar los resultados del perceptron
@@ -96,15 +97,16 @@ int main( int argc, char* args[] ) {
 			scoresP.push_back(score);
 		}
 	}
-	delete parser;
-
+	*/
+	//delete parser;
+	vector<pair<string,float>> result = perceptron->rate(testPath);
 	//Imprimo los resultados
 	ofstream outfile("popcorn.csv");
 	outfile << "\"id\",\"sentiment\"" << endl;
 
-	for (unsigned int i=0; i < id_reviews.size(); i++)
+	for (unsigned int i=0; i < result.size(); i++)
 	{
-		outfile << id_reviews[i]+"," << scoresP[i]<<endl;
+		outfile << result[i].first +"," << result[i].second <<endl;
 	}
 	outfile.close();
 

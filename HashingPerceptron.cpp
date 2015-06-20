@@ -192,11 +192,55 @@ void HashingPerceptron::Initialize()
 	this->weights = aux_weights;
 }
 
-float HashingPerceptron::rate(vector<string> review)
+vector<pair<string,float>> HashingPerceptron::rate(char* testPath)
 {
-	vector<unsigned int> aux_vec = this->getVector(review);
-	float result = this->dot_product(aux_vec);
-	return this->sigmoid(result);
+	printf("Comienzo a evaluar el set de prueba\n");
+	printf("\nIteracion \t Errores \t Promedio \t Tiempo \n");
+	//Instancio el parser
+	Parser* parser = new Parser();
+	vector<pair<string,float>> aux_vec;
+	ifstream testfile;
+	testfile.open(testPath);
+	//Elementos para informacion adicional
+	int error_count = 0;
+	int rev_counter = 0;
+	clock_t inicio = clock();
+	if(testfile.is_open())
+	{
+		string linea;
+		while( getline(testfile,linea) )
+		{
+			rev_counter++;
+			vector<string> tokenized_columns = parser->tokenizeColumns(linea);
+			vector<string> tokenized_words = parser->tokenizeReviews(tokenized_columns[1]);
+
+			string doc_id = tokenized_columns[0];
+
+			vector<unsigned int> vec_review = this->getVector(tokenized_words);
+
+			float score = this->dot_product(vec_review);
+			score = this->sigmoid(score);
+
+			//Supongo que todos los reviews son positivos
+			if (score <= this->threshold) error_count++;
+
+			pair<string,float> par_aux;
+			par_aux = make_pair(doc_id,score);
+			aux_vec.push_back(par_aux);	
+		}
+	}
+	double final = clock();
+	double secs = double(final - inicio) / CLOCKS_PER_SEC;
+	float min = floor(secs/60);
+	float sec = secs - min*60;
+	printf("%d\t\t%d\t\t%0.5f\t\t%.0f:%.3f\n",1,error_count, 1.0 - (double)error_count/rev_counter,min,sec);
+	fflush(stdout);
+	delete parser;
+	//vector<unsigned int> aux_vec = this->getVector(review);
+	//float result = this->dot_product(aux_vec);
+	//return this->sigmoid(result);
+	return aux_vec;
+
 }
 
 HashingPerceptron::~HashingPerceptron() {

@@ -3,6 +3,7 @@
 ################
 Files/*.csv
 Files/*.tsv
+Submittions/*.csv
 *.o
 complete_learning.tsv
 complete_test.tsv

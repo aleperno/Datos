@@ -22,7 +22,7 @@ class HashingPerceptron{
 public:
 	HashingPerceptron(char* path, int token_size, float learning_rate, unsigned int hash_size, float init);
 	~HashingPerceptron();
-	float rate(vector<string>);
+	vector<pair<string,float>> rate(char* path);
 	map<string,pair<int,vector<string>>> aux_map;
 
 private:

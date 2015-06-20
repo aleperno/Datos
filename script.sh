@@ -147,6 +147,7 @@ ejecutarExtra()
 
 	printf "\n Elimino los resultados temporales \n\n"
 	rm tmp/*
+	rm tmp
 
 	printf "\n Nombro el resultado final.csv \n\n"
 	mv avg.csv final.csv
@@ -163,14 +164,17 @@ testear()
 	banner
 	if si_o_no "Desea obtener la metrica offline (requiere python-sklearn)";
 	then
-		python test_results.py final.csv
+		score=$(python test_results.py final.csv)
+		echo $score
+		score=$(echo $score | cut -d ' ' -f 4)
+		cp final.csv Submittions/$score.csv
 	fi
 }
 
 main()
 {
 	mkdir 'tmp'
-	rmp tmp/*
+	rm tmp/*
 	clear
 	signature
 	compilar
