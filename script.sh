@@ -56,6 +56,9 @@ extra()
 		cant=$(wc -l Files/aux.tsv | cut -f 1 -d ' ')
 		cant=$(($cant-1))
 		printf "The data set to be used has %d elements\n\n" "$cant"
+		return 0
+	else
+		return 1
 	fi
 }
 
@@ -148,7 +151,6 @@ ejecutarExtra()
 
 	printf "\n Deleting temporary files \n\n"
 	rm tmp/*
-	rm tmp
 
 	printf "\n Naming end result final.csv \n\n"
 	mv avg.csv final.csv
@@ -184,9 +186,19 @@ main()
 	preParsear
 	ejecutarNormal
 	#El set extra
-	extra
-	preParsear
-	ejecutarExtra
+	if extra;
+	then
+		preParsear
+		ejecutarExtra
+	else
+		printf "\n Deleting temporary files \n\n"
+		rm tmp/*
+		rm popcorn.csv
+
+		printf "\n Naming end result final.csv \n\n"
+		mv avg.csv final.csv		
+	fi
+	rmdir tmp
 	testear
 	exit 0
 }

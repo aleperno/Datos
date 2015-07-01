@@ -36,4 +36,4 @@ for true, score in d.values():
 y_true = np.array(y_true)
 y_score = np.array(y_score)
 
-print "El score dio %0.5f" % roc_auc_score(y_true,y_score)
+print "Score: %0.5f" % roc_auc_score(y_true,y_score)
