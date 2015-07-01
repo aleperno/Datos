@@ -183,7 +183,7 @@ main()
 	preParsear
 	ejecutarNormal
 	#El set extra
-	extraAuto
+	extra
 	preParsear
 	ejecutarExtra
 	testear
