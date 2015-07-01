@@ -26,7 +26,7 @@ banner()
 
 si_o_no()
 {
-	printf "\n$1 (s/n)\n"
+	printf "\n$1 (y/n)\n"
 	read -n 1 -r
 	printf "\n\n"
 	if [[ $REPLY =~ ^[yY]$ ]]
@@ -178,6 +178,7 @@ main()
 	rm tmp/*
 	clear
 	signature
+	printf "\nNo error handling, make sure you have all the necessary files"
 	compilar
 	normal
 	preParsear

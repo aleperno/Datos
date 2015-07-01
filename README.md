@@ -10,6 +10,7 @@
 - Python 2.7x (not tested in Python 3)
 - g++
 - python-sklearn*
+- C++ BOOST lib
 
 *optional
 
