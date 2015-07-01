@@ -1,3 +1,7 @@
+"""
+https://github.com/MLWave/Kaggle-Ensemble-Guide
+"""
+
 from collections import defaultdict
 from glob import glob 
 import sys
