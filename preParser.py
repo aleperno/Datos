@@ -65,7 +65,7 @@ def main():
 	#Creo el archivo de salida
 	output = open(output_name,"wb")
 
-	print ("Archivo salida: %s, con metodo alternativo: %s") % (output_name,str(mode))
+	print ("Output File: %s, with alternative method: %s") % (output_name,str(mode))
 	if is_learning:
 		for line in file:
 			line = line.replace('\n','')

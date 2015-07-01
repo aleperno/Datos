@@ -10,7 +10,8 @@ cat << "EOF"
  \/   | .__/        /___,' \__,_|\__\___/|___/
       |_|                                     
 
-    Colautti, Pernin, Piccone © 1991-2001
+    Colautti, Pernin, Piccone
+    University of Buenos Aires
 EOF
 printf "#%.0s" {1..50}
 echo
@@ -28,7 +29,7 @@ si_o_no()
 	printf "\n$1 (s/n)\n"
 	read -n 1 -r
 	printf "\n\n"
-	if [[ $REPLY =~ ^[sS]$ ]]
+	if [[ $REPLY =~ ^[yY]$ ]]
 	then
 		return 0
 	else
@@ -38,43 +39,43 @@ si_o_no()
 normal()
 {
 	banner
-	printf "\t Copiando Files/labeledTrainData.tsv a aux.tsv"
+	printf "\t Copying Files/labeledTrainData.tsv to aux.tsv"
 	cp Files/labeledTrainData.tsv Files/aux.tsv
 }
 
 extra()
 {
 	banner
-	printf "\t Copiando Files/labeledTrainData.tsv a aux.tsv"
+	printf "\t Copying Files/labeledTrainData.tsv to aux.tsv"
 	cp Files/labeledTrainData.tsv Files/aux.tsv
-	if si_o_no "Desea utilizar set de datos extra? (recomendado: SI)"
+	if si_o_no "Would you like to use the extra data set? (advised: yes) (requires Files/Amazon.tsv file)"
 	then
-		printf "Ingrese cantidad deseada a utilizar 1 a 300.000 (recomendado 300000)\n"
+		printf "Input the ammount of reviews to use? 1 to 300,000 (advised 300000)\n"
 		read -r
 		head -n $REPLY Files/amazon.tsv >> Files/aux.tsv
 		cant=$(wc -l Files/aux.tsv | cut -f 1 -d ' ')
 		cant=$(($cant-1))
-		printf "El set de aprendizaje a utilizar posee %d elementos\n\n" "$cant"
+		printf "The data set to be used has %d elements\n\n" "$cant"
 	fi
 }
 
 extraAuto()
 {
 	banner
-	printf "\t Copiando Files/labeledTrainData.tsv a aux.tsv\n"
+	printf "\t Copying Files/labeledTrainData.tsv to aux.tsv\n"
 	cp Files/labeledTrainData.tsv Files/aux.tsv
 	cat Files/amazon.tsv >> Files/aux.tsv
 	cant=$(wc -l Files/aux.tsv | cut -f 1 -d ' ')
 	cant=$(($cant-1))
-	printf "\nEl set de aprendizaje a utilizar posee %d elementos\n\n" "$cant"
+	printf "The data set to be used has %d elements\n\n" "$cant"
 }
 
 compilar()
 {
 	banner
-	if si_o_no "Desea compilar el proyecto?";
+	if si_o_no "Wish to compile the project?";
 	then
-		printf "\tCompilando el proyecto\n\n"
+		printf "\tCompiling\n\n"
 		make
 	fi
 }
@@ -82,7 +83,7 @@ compilar()
 preParsear()
 {
 	banner
-	printf "\tPreparseando los archivos de entrada \n\n"
+	printf "\tPreparsing input files \n\n"
 	#python preParser.py Files/labeledTrainData.tsv
 	python preParser.py Files/aux.tsv
 	python preParser.py Files/testData.tsv
@@ -91,78 +92,78 @@ preParsear()
 ejecutarNormal()
 {
 	banner
-	printf "\t Se correra el programa principal con el set de datos original \n\n"
-	printf "\t Inicializando pesos en -2 \n\n"
+	printf "\t Running the main program with original data set \n\n"
+	printf "\t Initializing weights with -2 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv -2
-	printf "Copio el resultado en tmp \n\n"
+	printf "Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/-2.csv
 
 	banner
-	printf "\t Inicializando pesos en -1 \n\n"
+	printf "\t Initializing weights with -1 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv -1
-	printf "\n Copio el resultado en tmp \n\n"
+	printf "\n Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/-1.csv
 
 	banner
-	printf "\t Inicializando pesos en 0 \n\n"
+	printf "\t Initializing weights with 0 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv 0
-	printf "\n Copio el resultado en tmp \n\n"
+	printf "\n Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/0.csv
 
 	banner
-	printf "\t Inicializando pesos en 1 \n\n"
+	printf "\t Initializing weights with 1 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv 1
-	printf "\n Copio el resultado en tmp \n\n"
+	printf "\n Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/1.csv
 
 	banner
-	printf "\t Inicializando pesos en 2 \n\n"
+	printf "\t Initializing weights with 2 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv 2
-	printf "\n Copio el resultado en tmp \n\n"
+	printf "\n Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/2.csv
 
 	banner
-	printf "\n\t Combino los resultados \n\n"
+	printf "\n\t Combining results \n\n"
 	python avg.py 'tmp/*'
 
-	printf "\n Elimino los resultados temporales \n\n"
+	printf "\n Deleting temporary files \n\n"
 	rm tmp/*
 
-	printf "\n Copio la combinacion en tmp\n\n"
+	printf "\n Copying the combination to tmp\n\n"
 	cp avg.csv tmp/avg.csv
 }
 
 ejecutarExtra()
 {
 	banner
-	printf "\t Se correra el programa principal con el set de datos extra \n\n"
-	printf "\t Inicializando pesos en 0 \n\n"
+	printf "\t Running the main program with extra data set \n\n"
+	printf "\t Initializing weights with 0 \n\n"
 	./Datos complete_learning.tsv complete_test.tsv 0
-	printf "Copio el resultado en tmp \n\n"
+	printf "Copying the result to tmp \n\n"
 	cp popcorn.csv tmp/extra.csv
 
 	banner
-	printf "\n\t Combino los resultados \n\n"
+	printf "\n\t Combining results \n\n"
 	python avg.py 'tmp/*'
 
-	printf "\n Elimino los resultados temporales \n\n"
+	printf "\n Deleting temporary files \n\n"
 	rm tmp/*
 	rm tmp
 
-	printf "\n Nombro el resultado final.csv \n\n"
+	printf "\n Naming end result final.csv \n\n"
 	mv avg.csv final.csv
 
-	printf "\n Genero el grupo8_probs.csv \n\n"
-	tail -n 25000 final.csv | cut -d ',' -f 2 > grupo8_probs.csv
+	#printf "\n Genero el grupo8_probs.csv \n\n"
+	#tail -n 25000 final.csv | cut -d ',' -f 2 > grupo8_probs.csv
 
-	printf "\n Elimino archivos extras \n\n"
+	printf "\n Deleting temporary files \n\n"
 	rm popcorn.csv
 }
 
 testear()
 {
 	banner
-	if si_o_no "Desea obtener la metrica offline (requiere python-sklearn)";
+	if si_o_no "Wish to obtain the AUC score? (requires python-sklearn)";
 	then
 		score=$(python test_results.py final.csv)
 		echo $score
@@ -190,13 +191,3 @@ main()
 }
 
 main
-
-echo "Desea obtener la metrica offline (s/n)? (requiere python-sklearn)"
-read -n 1 -r
-echo #
-if [[ $REPLY =~ ^[sS]$ ]]
-then
-	echo "Dijiste que si"
-else
-	echo "Dijiste que no"
-fi

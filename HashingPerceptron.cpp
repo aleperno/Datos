@@ -44,7 +44,7 @@ HashingPerceptron::HashingPerceptron(char* path, int token_size, float learning_
 	clock_t inicio = clock();
 	if(myfile.is_open())
 	{
-		printf("Comienzo a representar los reviews como vectores con hashing trick\n");
+		printf("Began to represent reviews as vectors using hashing trick\n");
 
 		string linea;
 		while( getline(myfile,linea) )
@@ -70,13 +70,13 @@ HashingPerceptron::HashingPerceptron(char* path, int token_size, float learning_
 	double secs = double(final - inicio) / CLOCKS_PER_SEC;
 	float min = floor(secs/60);
 	float sec = secs - min*60;
-	printf("Se tardo %0.0f:%.3f\n",min,sec);
+	printf("Took %0.0f:%.3f\n",min,sec);
 	delete parser;
 	this->learning_rate = learning_rate;
 	this->threshold = 0.5;
 
 	this->weights = vector<float>(this->hash_size,init);
-	cout << "Los pesos se inicalizaron en " << this->weights[0] << endl;
+	cout << "Weights were initialized with " << this->weights[0] << endl;
 	this->Initialize();
 }
 
@@ -125,8 +125,8 @@ vector<unsigned int> HashingPerceptron::getVector(vector<string> tokenized_words
 void HashingPerceptron::Initialize()
 {
 
-	cout << "Comienzo a balancear los pesos del perceptron" << endl;
-	printf("\nIteracion \t Errores \t Promedio \t Tiempo \n");
+	cout << "Began to balance perceptron's weights" << endl;
+	printf("\nIterations \t Errors \t Average \t Time \n");
 	int iter_count = 1;
 	int rev_counter = 0;
 	clock_t inicio = clock();
@@ -175,27 +175,27 @@ void HashingPerceptron::Initialize()
 		//Controlo el corte
 		if (iter_count == ITERATION_LIMIT)
 		{
-			cout << "Llegado al limite permitido de iteraciones" << endl;
+			cout << "Reached Iteration Limit" << endl;
 			break;
 		}
 		if (error_count == 0) break;
 		if (min_count == 5)
 		{
-			cout << "Se supero el limite de iteraciones con error minimo" << endl;
+			cout << "Reached Iteration Limit with minimum error" << endl;
 			break;
 		}
 		iter_count++;
 	}
-	cout << "Termino de balancear el perceptron" << endl;
+	cout << "Finished perceptron balance" << endl;
 	//Guardo el hiperplano de minimo error
-	cout << "El error minimo fue de " << min_error << endl;
+	cout << "Minimum error was " << min_error << endl;
 	this->weights = aux_weights;
 }
 
 vector<pair<string,float>> HashingPerceptron::rate(char* testPath)
 {
-	printf("Comienzo a evaluar el set de prueba\n");
-	printf("\nIteracion \t Errores \t Promedio \t Tiempo \n");
+	printf("Began to test the test set dataset\n");
+	printf("\nIteration \t Errors \t Average \t Time \n");
 	//Instancio el parser
 	Parser* parser = new Parser();
 	vector<pair<string,float>> aux_vec;
